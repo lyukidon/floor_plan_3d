@@ -1,26 +1,30 @@
-// // OpenCV 모듈
-// const Module = {
-//   // https://emscripten.org/docs/api_reference/module.html#Module.onRuntimeInitialized
-//   onRuntimeInitialized() {
-//     document.getElementById("status").innerHTML = "OpenCV.js is ready.";
-//   },
-// };
-
 import { render3d } from "./main.js";
-import { imgData } from "./mockData.js";
 
 const imgElement = document.querySelector("img#imageSrc");
 const inputElement = document.getElementById("fileInput");
-export var newImgData = []
+export var newImgData = [];
+
+const options = { 
+  maxSizeMB: 1,            // (default: Number.POSITIVE_INFINITY)
+  maxWidthOrHeight: 360,     // compressedFile will scale down by ratio to a point that width or height is smaller than maxWidthOrHeight (default: undefined)
+                                // but, automatically reduce the size to smaller than the maximum Canvas size supported by each browser.
+                                // Please check the Caveat part for details.
+  onProgress: Function,         // optional, a function takes one progress argument (percentage from 0 to 100) 
+  useWebWorker: true,        // optional, use multi-thread web worker, fallback to run in main-thread (default: true)
+  fileType: "image/*",             // optional, fileType override e.g., 'image/jpeg', 'image/png' (default: file.type)
+  alwaysKeepResolution: true // optional, only reduce quality, always keep width and height (default: false)
+}
 
 // 이미지 넣기
 inputElement.addEventListener(
   "change",
   (e) => {
-    imgElement.src = URL.createObjectURL(e.target.files[0]);
+    imageCompression(e.target.files[0], options)
+    .then(res => imgElement.src = URL.createObjectURL(res))
   },
   false
 );
+
 //canvas
 imgElement.onload = function () {
   // canvas에 사진 그리기

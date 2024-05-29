@@ -11,18 +11,17 @@
         }
       }
     </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
   </head>
   <body>
-    <h2>Hello OpenCV.js</h2>
-    <p id="status">OpenCV.js is loading...</p>
     <div>
       <div class="inputoutput">
         <img id="imageSrc" alt="No Image" />
-        <div class="caption">imageSrc <input type="file" id="fileInput" name="file" /></div>
+        <div class="caption">image Preview <input type="file" id="fileInput" name="file" /></div>
       </div>
       <div class="inputoutput">
         <canvas id="canvasOutput"></canvas>
-        <div class="caption">canvasOutput</div>
+        <div class="caption">img preview canvas</div>
       </div>
       <div class="inputoutput">
         <canvas id="canvasEdit"></canvas>
