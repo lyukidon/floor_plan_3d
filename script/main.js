@@ -1,12 +1,13 @@
 import * as THREE from "three";
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-export function render3d(imgData) {
-  const renderer = new THREE.WebGLRenderer();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(renderer.domElement);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth/2, window.innerHeight/2);
+document.body.appendChild(renderer.domElement);
 
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+export function render3d(imgData) {
+
+  const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 2000);
   camera.position.set(imgData.width / 2, imgData.height / 2, 400);
   // camera.lookAt(imgData.width/2, imgData.height/2,0);
 
