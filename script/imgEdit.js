@@ -25,8 +25,18 @@ inputElement.addEventListener(
   false
 );
 
-//canvas
-imgElement.onload = function () {
+
+const rangeElement = document.querySelector("input#colorRange")
+
+var baseColor = document.querySelector("input#colorRange").value;
+
+rangeElement.addEventListener('change', () => {
+  baseColor = rangeElement.value
+  console.log(baseColor)
+  drawCanvas()
+})
+
+function drawCanvas () {
   // canvas에 사진 그리기
   const canvasOutput = document.querySelector("canvas#canvasOutput");
   const ctx = canvasOutput.getContext("2d");
@@ -37,7 +47,6 @@ imgElement.onload = function () {
   // 이미지 편집
   function editImg(imgData) {
     const data = [...imgData.data];
-    const baseColor = 40;
     for (var i = 0; i < data.length; i += 4) {
       if (data[i] < baseColor && data[i + 1] < baseColor && data[i + 2] < baseColor) {
         data[i] = 0;
@@ -70,4 +79,9 @@ imgElement.onload = function () {
   //canvas에서 이미지 데이터 가져오기
   
   render3d(newImgData)
+}
+
+//canvas
+imgElement.onload = function () {
+  drawCanvas()
 };
