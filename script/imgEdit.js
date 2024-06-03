@@ -77,7 +77,9 @@ imgElement.onload = function () {
 
 // 이미지 편집
 function editImg(imgData) {
-  return averageEdit(imgData);
+  const averaged = averageEdit(imgData);
+  const greyscaled = greyScale(averaged);
+  return greyscaled
 }
 
 // 이미지 테두리 찾기
@@ -96,12 +98,10 @@ function averageEdit(imgData) {
       total++;
     }
   }
-  console.log(average);
-  console.log(total)
+
   average.r = Math.round(average.r / total);
   average.g = Math.round(average.g / total);
   average.b = Math.round(average.b / total);
-  console.log(average);
 
   for (let i = 0; i < data.length; i = i + 4) {
     if (data[i] > average.r || data[i + 1] > average.g || data[i + 2] > average.b) {
@@ -133,7 +133,12 @@ function binarization(imgData, threshold) {
 function greyScale(imgData) {
   const data = [...imgData.data];
 
-  for (let i = 0; i < data.length; i = i + 4) {}
+  for (let i = 0; i < data.length; i = i + 4) {
+    const average = (data[i] + data[i+1] + data[i+2]) / 3;
+    data[i] = average;
+    data[i+1] = average;
+    data[i+2] = average;
+  }
 
   return new ImageData(new Uint8ClampedArray([...data]), imgData.width, imgData.height);
 }
