@@ -79,14 +79,14 @@ imgElement.onload = function () {
 function editImg(imgData) {
   const averaged = averageEdit(imgData);
   const greyscaled = greyScale(averaged);
-  return greyscaled
+  const binarizated = binarization(greyscaled);
+  return binarizated;
 }
 
 // 이미지 테두리 찾기
 
 // 그림의 평균 값을 찾아, 평균보다 큰 값은 모두 255로 변경
 function averageEdit(imgData) {
-  console.log(imgData);
   const data = [...imgData.data];
   let average = { r: 0, g: 0, b: 0 };
   let total = 0;
@@ -103,6 +103,8 @@ function averageEdit(imgData) {
   average.g = Math.round(average.g / total);
   average.b = Math.round(average.b / total);
 
+  console.log(average)
+
   for (let i = 0; i < data.length; i = i + 4) {
     if (data[i] > average.r || data[i + 1] > average.g || data[i + 2] > average.b) {
       data[i] = 255;
@@ -114,7 +116,7 @@ function averageEdit(imgData) {
   return new ImageData(new Uint8ClampedArray([...data]), imgData.width, imgData.height);
 }
 // 이진화
-function binarization(imgData, threshold) {
+function binarization(imgData, threshold = baseColor) {
   const data = [...imgData.data];
   for (let i = 0; i < data.length; i += 4) {
     if (data[i] < threshold && data[i + 1] < threshold && data[i + 2] < threshold) {
@@ -134,11 +136,89 @@ function greyScale(imgData) {
   const data = [...imgData.data];
 
   for (let i = 0; i < data.length; i = i + 4) {
-    const average = (data[i] + data[i+1] + data[i+2]) / 3;
+    const average = (data[i] + data[i + 1] + data[i + 2]) / 3;
     data[i] = average;
-    data[i+1] = average;
-    data[i+2] = average;
+    data[i + 1] = average;
+    data[i + 2] = average;
   }
 
   return new ImageData(new Uint8ClampedArray([...data]), imgData.width, imgData.height);
+}
+
+function middleEdit(imgData) {
+  const data = [...imgData.data];
+  const normalData = { r: {}, g: {}, b: {}, totalLength: 0};
+  const normal = { r: 0, g: 0, b: 0 };
+
+  for (let i = 0; i < data.length; i = i + 4) {
+    if (!(data[i] === 255 && data[i + 1] === 255 && data[i + 2] === 255)) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      normalData.r[r] ? normalData.r[r]++ : (normalData.r[r] = 1);
+      normalData.g[g] ? normalData.g[g]++ : (normalData.g[g] = 1);
+      normalData.b[b] ? normalData.b[b]++ : (normalData.b[b] = 1);
+      normalData.totalLength++;
+    }
+  }
+
+  for (let i=0; i<3;i++){
+    const color = Object.keys(normalData)[i]
+    let mid = parseInt(normalData.totalLength / 2);
+    for (let j of Object.keys(normalData[color])){
+      const colorNum = normalData[color][j]
+      if (mid - colorNum <= 0){
+        normal[color] = j;
+        break;
+      }else{
+        mid -= colorNum
+      }
+    }
+  }
+
+  console.log(normal)
+  for (let i = 0; i < data.length; i = i + 4) {
+    if (data[i] > normal.r || data[i + 1] > normal.g || data[i + 2] > normal.b) {
+      data[i] = 255;
+      data[i + 1] = 255;
+      data[i + 2] = 255;
+    }
+  }
+
+  return new ImageData(new Uint8ClampedArray([...data]), imgData.width, imgData.height);
+}
+
+class Morph {
+  costructor(imgData) {
+    // 이미지와 구조화 요소
+    // 구조화 요소는 무조건 제곱수 3*3 형식의 배열
+    // 중심 값은 중앙값
+    // [1,1,1,
+    //  1,1,1,
+    //  1,1,1]
+    this.width = imgData.width - 1;
+    this.data = [...imgData.data];
+    this.structure = [1, 1, 1, 1, 1, 1, 1, 1, 1];
+    this.base = (this.structure.length - 1) / 3;
+  }
+
+  erosion() {
+    for (let i = 0; i < this.data.length; i = i + 4) {
+      const r = this.data[i];
+      const g = this.data[i + 1];
+      const b = this.data[i + 2];
+      const x = i % this.width;
+      const y = parseInt(i / (this.width * 4));
+
+      for (let j = 0; j < this.structure.length; j++) {
+        // if () {}
+      }
+    }
+  }
+
+  grediant() {}
+
+  open() {}
+
+  close() {}
 }
