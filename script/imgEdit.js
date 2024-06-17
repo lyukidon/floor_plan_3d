@@ -48,7 +48,6 @@ function drawCanvas() {
 
   //이미지 편집하기
   const editedData = editImg({ ...imgData, width: imgData.width, height: imgData.height });
-  console.log(editedData);
   newImgData = new ImageData(
     new Uint8ClampedArray([...editedData.data]),
     editedData.width,
@@ -80,7 +79,20 @@ function editImg(imgData) {
   const averaged = averageEdit(imgData);
   const greyscaled = greyScale(averaged);
   const binarizated = binarization(greyscaled);
-  return binarizated;
+  const morph = new Morph(binarizated, 
+    {
+      data: [ 
+              1,1,1,
+              1,1,1,
+              1,1,1
+            ],
+      width: 3,
+      center: [1, 1]
+    }
+  )
+  return morph.erosion()
+  // return morph.dilation()
+  // return binarizated
 }
 
 // 이미지 테두리 찾기
@@ -102,8 +114,6 @@ function averageEdit(imgData) {
   average.r = Math.round(average.r / total);
   average.g = Math.round(average.g / total);
   average.b = Math.round(average.b / total);
-
-  console.log(average)
 
   for (let i = 0; i < data.length; i = i + 4) {
     if (data[i] > average.r || data[i + 1] > average.g || data[i + 2] > average.b) {
@@ -147,7 +157,7 @@ function greyScale(imgData) {
 
 function middleEdit(imgData) {
   const data = [...imgData.data];
-  const normalData = { r: {}, g: {}, b: {}, totalLength: 0};
+  const normalData = { r: {}, g: {}, b: {}, totalLength: 0 };
   const normal = { r: 0, g: 0, b: 0 };
 
   for (let i = 0; i < data.length; i = i + 4) {
@@ -162,21 +172,20 @@ function middleEdit(imgData) {
     }
   }
 
-  for (let i=0; i<3;i++){
-    const color = Object.keys(normalData)[i]
+  for (let i = 0; i < 3; i++) {
+    const color = Object.keys(normalData)[i];
     let mid = parseInt(normalData.totalLength / 2);
-    for (let j of Object.keys(normalData[color])){
-      const colorNum = normalData[color][j]
-      if (mid - colorNum <= 0){
+    for (let j of Object.keys(normalData[color])) {
+      const colorNum = normalData[color][j];
+      if (mid - colorNum <= 0) {
         normal[color] = j;
         break;
-      }else{
-        mid -= colorNum
+      } else {
+        mid -= colorNum;
       }
     }
   }
 
-  console.log(normal)
   for (let i = 0; i < data.length; i = i + 4) {
     if (data[i] > normal.r || data[i + 1] > normal.g || data[i + 2] > normal.b) {
       data[i] = 255;
@@ -189,31 +198,124 @@ function middleEdit(imgData) {
 }
 
 class Morph {
-  costructor(imgData) {
-    // 이미지와 구조화 요소
-    // 구조화 요소는 무조건 제곱수 3*3 형식의 배열
-    // 중심 값은 중앙값
-    // [1,1,1,
-    //  1,1,1,
-    //  1,1,1]
-    this.width = imgData.width - 1;
+  constructor(imgData, structure) {
+    /**
+     * imgData : 이미지 데이터
+     * structure : 구조화 요소 데이터
+     * {
+     *    data: [
+     *             0,1,0,
+     *             1,1,1,
+     *             0,1,0
+     *          ],
+     *    width: 3,
+     *    center: [1,1]
+     * }
+     */
+    console.log(imgData)
+    this.imgData = imgData
+    this.width = imgData.width;
     this.data = [...imgData.data];
-    this.structure = [1, 1, 1, 1, 1, 1, 1, 1, 1];
+    this.structure = structure;
     this.base = (this.structure.length - 1) / 3;
   }
 
   erosion() {
-    for (let i = 0; i < this.data.length; i = i + 4) {
-      const r = this.data[i];
-      const g = this.data[i + 1];
-      const b = this.data[i + 2];
-      const x = i % this.width;
-      const y = parseInt(i / (this.width * 4));
+    /**
+     * 1. 데이터 확인은 기존
+     * 2. 데이터 편집은 복사본
+     * 3. 기존 = 복사본
+     */
+    const data = [...this.data];
 
-      for (let j = 0; j < this.structure.length; j++) {
-        // if () {}
+    for (let i = 0; i < this.data.length; i = i + 4) {
+      const data_x = parseInt((i % (this.width * 4)));
+      const data_y = parseInt(i / (this.width * 4));
+
+      // 구조체 검색 후, 전체 다 0 아닌 경우는 255 으로 변경하기
+      let check = true;
+
+      // 구조체 전체 검색하기
+      for (let j = 0; j < this.structure.data.length; j++) {
+        if (this.structure.data[j] === 1) {
+          const structure_x = (j % this.structure.width) - this.structure.center[0]
+          const structure_y = parseInt(j / this.structure.width) - this.structure.center[1];
+
+          const pos_x = data_x + structure_x * 4;
+          const pos_y = data_y + structure_y;
+
+          const pos = pos_x + pos_y * this.width * 4;
+
+          const pos_r = this.data[pos];
+          const pos_g = this.data[pos + 1];
+          const pos_b = this.data[pos + 2];
+
+          if (!(pos_r === 0 && pos_g === 0 && pos_b === 0)) {
+            check = false;
+            break;
+          }
+        }
+      }
+
+      if (!check) {
+        data[i] = 255;
+        data[i + 1] = 255;
+        data[i + 2] = 255;
       }
     }
+
+    this.data = data
+
+    return new ImageData(new Uint8ClampedArray([...this.data]), this.imgData.width, this.imgData.height);
+  }
+
+  dilation() {
+    /**
+     * 1. 데이터 확인은 기존
+     * 2. 데이터 편집은 복사본
+     * 3. 기존 = 복사본
+     */
+    const data = [...this.data];
+
+    for (let i = 0; i < this.data.length; i = i + 4) {
+      const data_x = parseInt((i % (this.width * 4)));
+      const data_y = parseInt(i / (this.width * 4));
+
+      // 구조체 검색 후, 전체 다 0 아닌 경우는 255 으로 변경하기
+      let check = false;
+
+      // 구조체 전체 검색하기
+      for (let j = 0; j < this.structure.data.length; j++) {
+        if (this.structure.data[j] === 1) {
+          const structure_x = (j % this.structure.width) - this.structure.center[0]
+          const structure_y = parseInt(j / this.structure.width) - this.structure.center[1];
+
+          const pos_x = data_x + structure_x * 4;
+          const pos_y = data_y + structure_y;
+
+          const pos = pos_x + pos_y * this.width * 4;
+
+          const pos_r = this.data[pos];
+          const pos_g = this.data[pos + 1];
+          const pos_b = this.data[pos + 2];
+
+          if (pos_r === 0 && pos_g === 0 && pos_b === 0) {
+            check = true;
+            break;
+          }
+        }
+      }
+
+      if (check) {
+        data[i] = 0;
+        data[i + 1] = 255;
+        data[i + 2] = 0;
+      }
+    }
+
+    this.data = data
+
+    return new ImageData(new Uint8ClampedArray([...this.data]), this.imgData.width, this.imgData.height);
   }
 
   grediant() {}
