@@ -79,19 +79,20 @@ function editImg(imgData) {
   const averaged = averageEdit(imgData);
   const greyscaled = greyScale(averaged);
   const binarizated = binarization(greyscaled);
-  const morph = new Morph(binarizated, 
-    {
-      data: [ 
-              1,1,1,
-              1,1,1,
-              1,1,1
-            ],
-      width: 3,
-      center: [1, 1]
-    }
-  )
-  return morph.erosion()
+  const morph = new Morph(binarizated, {
+    data: [
+      1, 1, 1, 1,1,
+      1, 1, 1, 1,1,
+      1, 1, 1, 1,1,
+      1, 1, 1, 1,1,
+      1, 1, 1, 1,1,
+    ],
+    width: 5,
+    center: [2, 2],
+  });
+  return morph.closing().getImg();
   // return morph.dilation()
+  // return morph.erosion();
   // return binarizated
 }
 
@@ -212,8 +213,7 @@ class Morph {
      *    center: [1,1]
      * }
      */
-    console.log(imgData)
-    this.imgData = imgData
+    this.imgData = imgData;
     this.width = imgData.width;
     this.data = [...imgData.data];
     this.structure = structure;
@@ -229,7 +229,7 @@ class Morph {
     const data = [...this.data];
 
     for (let i = 0; i < this.data.length; i = i + 4) {
-      const data_x = parseInt((i % (this.width * 4)));
+      const data_x = parseInt(i % (this.width * 4));
       const data_y = parseInt(i / (this.width * 4));
 
       // 구조체 검색 후, 전체 다 0 아닌 경우는 255 으로 변경하기
@@ -238,7 +238,7 @@ class Morph {
       // 구조체 전체 검색하기
       for (let j = 0; j < this.structure.data.length; j++) {
         if (this.structure.data[j] === 1) {
-          const structure_x = (j % this.structure.width) - this.structure.center[0]
+          const structure_x = (j % this.structure.width) - this.structure.center[0];
           const structure_y = parseInt(j / this.structure.width) - this.structure.center[1];
 
           const pos_x = data_x + structure_x * 4;
@@ -264,9 +264,9 @@ class Morph {
       }
     }
 
-    this.data = data
+    this.data = data;
 
-    return new ImageData(new Uint8ClampedArray([...this.data]), this.imgData.width, this.imgData.height);
+    return this;
   }
 
   dilation() {
@@ -278,7 +278,7 @@ class Morph {
     const data = [...this.data];
 
     for (let i = 0; i < this.data.length; i = i + 4) {
-      const data_x = parseInt((i % (this.width * 4)));
+      const data_x = parseInt(i % (this.width * 4));
       const data_y = parseInt(i / (this.width * 4));
 
       // 구조체 검색 후, 전체 다 0 아닌 경우는 255 으로 변경하기
@@ -287,7 +287,7 @@ class Morph {
       // 구조체 전체 검색하기
       for (let j = 0; j < this.structure.data.length; j++) {
         if (this.structure.data[j] === 1) {
-          const structure_x = (j % this.structure.width) - this.structure.center[0]
+          const structure_x = (j % this.structure.width) - this.structure.center[0];
           const structure_y = parseInt(j / this.structure.width) - this.structure.center[1];
 
           const pos_x = data_x + structure_x * 4;
@@ -308,19 +308,29 @@ class Morph {
 
       if (check) {
         data[i] = 0;
-        data[i + 1] = 255;
+        data[i + 1] = 0;
         data[i + 2] = 0;
       }
     }
 
-    this.data = data
+    this.data = data;
 
-    return new ImageData(new Uint8ClampedArray([...this.data]), this.imgData.width, this.imgData.height);
+    return this;
   }
 
   grediant() {}
 
-  open() {}
+  opening() {
+    this.erosion().dilation();
+    return this;
+  }
 
-  close() {}
+  closing() {
+    this.dilation().erosion();
+    return this;
+  }
+
+  getImg() {
+    return new ImageData(new Uint8ClampedArray(this.data), this.imgData.width, this.imgData.height);
+  }
 }
