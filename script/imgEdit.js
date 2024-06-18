@@ -81,16 +81,22 @@ function editImg(imgData) {
   const binarizated = binarization(greyscaled);
   const morph = new Morph(binarizated, {
     data: [
-      1, 1, 1, 1,1,
-      1, 1, 1, 1,1,
-      1, 1, 1, 1,1,
-      1, 1, 1, 1,1,
-      1, 1, 1, 1,1,
+      0, 1, 0,
+      1, 1, 1,
+      0, 1, 0,
     ],
-    width: 5,
-    center: [2, 2],
+    width: 3,
+    center: [1, 1],
   });
-  return morph.closing().getImg();
+  return (
+    morph
+
+      // .dilation()
+      // .erosion()
+      .closing()
+      // .grediant()
+      .getImg()
+  );
   // return morph.dilation()
   // return morph.erosion();
   // return binarizated
@@ -220,12 +226,16 @@ class Morph {
     this.base = (this.structure.length - 1) / 3;
   }
 
-  erosion() {
+  erosion(structureData) {
     /**
      * 1. 데이터 확인은 기존
      * 2. 데이터 편집은 복사본
      * 3. 기존 = 복사본
      */
+    if (structureData) {
+      this.structure = structureData;
+    }
+
     const data = [...this.data];
 
     for (let i = 0; i < this.data.length; i = i + 4) {
@@ -269,12 +279,16 @@ class Morph {
     return this;
   }
 
-  dilation() {
+  dilation(structureData) {
     /**
      * 1. 데이터 확인은 기존
      * 2. 데이터 편집은 복사본
      * 3. 기존 = 복사본
      */
+    // if (structureData){
+    //   this.structure = structureData;
+    // }
+
     const data = [...this.data];
 
     for (let i = 0; i < this.data.length; i = i + 4) {
@@ -318,7 +332,68 @@ class Morph {
     return this;
   }
 
-  grediant() {}
+  grediant() {
+    const erosionData = [...this.data];
+    const dilationData = [...this.data];
+
+    for (let i = 0; i < this.data.length; i = i + 4) {
+      const data_x = parseInt(i % (this.width * 4));
+      const data_y = parseInt(i / (this.width * 4));
+
+      let erosionCheck = true;
+      let dilationCheck = false;
+
+      for (let j = 0; j < this.structure.data.length; j++) {
+        if (this.structure.data[j] === 1) {
+          const structure_x = (j % this.structure.width) - this.structure.center[0];
+          const structure_y = parseInt(j / this.structure.width) - this.structure.center[1];
+
+          const pos_x = data_x + structure_x * 4;
+          const pos_y = data_y + structure_y;
+
+          const pos = pos_x + pos_y * this.width * 4;
+
+          const pos_r = this.data[pos];
+          const pos_g = this.data[pos + 1];
+          const pos_b = this.data[pos + 2];
+
+          if (!(pos_r === 0 && pos_g === 0 && pos_b === 0)) {
+            erosionCheck = false;
+          }
+
+          if (pos_r === 0 && pos_g === 0 && pos_b === 0) {
+            dilationCheck = true;
+          }
+        }
+      }
+
+      if (!erosionCheck) {
+        erosionData[i] = 255;
+        erosionData[i + 1] = 255;
+        erosionData[i + 2] = 255;
+      }
+
+      if (dilationCheck) {
+        dilationData[i] = 0;
+        dilationData[i + 1] = 0;
+        dilationData[i + 2] = 0;
+      }
+    }
+
+    const data = [];
+
+    for (let i = 0; i < erosionData.length; i++) {
+      if (erosionData[i] === dilationData[i]) {
+        data[i] = 255;
+      } else {
+        data[i] = 0;
+      }
+    }
+
+    this.data = data;
+
+    return this;
+  }
 
   opening() {
     this.erosion().dilation();
