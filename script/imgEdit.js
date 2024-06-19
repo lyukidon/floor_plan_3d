@@ -15,15 +15,23 @@ const options = {
   alwaysKeepResolution: true, // optional, only reduce quality, always keep width and height (default: false)
 };
 
+document.addEventListener("DOMContentLoaded", async () => {
+  let previewBlob = await fetch("/public/map.jpeg").then((res) => res.blob());
+  imageCompression(previewBlob, options).then(
+    (res) => (imgElement.src = URL.createObjectURL(res)),
+  );
+});
+
 // 이미지 넣기
 inputElement.addEventListener(
   "change",
   (e) => {
+    console.log(e.target.files[0]);
     imageCompression(e.target.files[0], options).then(
-      (res) => (imgElement.src = URL.createObjectURL(res))
+      (res) => (imgElement.src = URL.createObjectURL(res)),
     );
   },
-  false
+  false,
 );
 
 const rangeElement = document.querySelector("input#colorRange");
@@ -44,14 +52,23 @@ function drawCanvas() {
   ctx.drawImage(imgElement, 0, 0);
 
   //canvas에서 이미지 데이터 가져오기
-  const imgData = ctx.getImageData(0, 0, canvasOutput.width, canvasOutput.height);
+  const imgData = ctx.getImageData(
+    0,
+    0,
+    canvasOutput.width,
+    canvasOutput.height,
+  );
 
   //이미지 편집하기
-  const editedData = editImg({ ...imgData, width: imgData.width, height: imgData.height });
+  const editedData = editImg({
+    ...imgData,
+    width: imgData.width,
+    height: imgData.height,
+  });
   newImgData = new ImageData(
     new Uint8ClampedArray([...editedData.data]),
     editedData.width,
-    editedData.height
+    editedData.height,
   );
   const canvasEdit = document.querySelector("canvas#canvasEdit");
   const ctxEdit = canvasEdit.getContext("2d");
@@ -80,17 +97,12 @@ function editImg(imgData) {
   const greyscaled = greyScale(averaged);
   const binarizated = binarization(greyscaled);
   const morph = new Morph(binarizated, {
-    data: [
-      0, 1, 0,
-      1, 1, 1,
-      0, 1, 0,
-    ],
+    data: [1, 1, 1, 1, 1, 1, 1, 1, 1],
     width: 3,
     center: [1, 1],
   });
   return (
     morph
-
       // .dilation()
       // .erosion()
       .closing()
@@ -123,20 +135,32 @@ function averageEdit(imgData) {
   average.b = Math.round(average.b / total);
 
   for (let i = 0; i < data.length; i = i + 4) {
-    if (data[i] > average.r || data[i + 1] > average.g || data[i + 2] > average.b) {
+    if (
+      data[i] > average.r ||
+      data[i + 1] > average.g ||
+      data[i + 2] > average.b
+    ) {
       data[i] = 255;
       data[i + 1] = 255;
       data[i + 2] = 255;
     }
   }
 
-  return new ImageData(new Uint8ClampedArray([...data]), imgData.width, imgData.height);
+  return new ImageData(
+    new Uint8ClampedArray([...data]),
+    imgData.width,
+    imgData.height,
+  );
 }
 // 이진화
 function binarization(imgData, threshold = baseColor) {
   const data = [...imgData.data];
   for (let i = 0; i < data.length; i += 4) {
-    if (data[i] < threshold && data[i + 1] < threshold && data[i + 2] < threshold) {
+    if (
+      data[i] < threshold &&
+      data[i + 1] < threshold &&
+      data[i + 2] < threshold
+    ) {
       data[i] = 0;
       data[i + 1] = 0;
       data[i + 2] = 0;
@@ -146,7 +170,11 @@ function binarization(imgData, threshold = baseColor) {
       data[i + 2] = 255;
     }
   }
-  return new ImageData(new Uint8ClampedArray([...data]), imgData.width, imgData.height);
+  return new ImageData(
+    new Uint8ClampedArray([...data]),
+    imgData.width,
+    imgData.height,
+  );
 }
 
 function greyScale(imgData) {
@@ -159,7 +187,11 @@ function greyScale(imgData) {
     data[i + 2] = average;
   }
 
-  return new ImageData(new Uint8ClampedArray([...data]), imgData.width, imgData.height);
+  return new ImageData(
+    new Uint8ClampedArray([...data]),
+    imgData.width,
+    imgData.height,
+  );
 }
 
 function middleEdit(imgData) {
@@ -194,14 +226,22 @@ function middleEdit(imgData) {
   }
 
   for (let i = 0; i < data.length; i = i + 4) {
-    if (data[i] > normal.r || data[i + 1] > normal.g || data[i + 2] > normal.b) {
+    if (
+      data[i] > normal.r ||
+      data[i + 1] > normal.g ||
+      data[i + 2] > normal.b
+    ) {
       data[i] = 255;
       data[i + 1] = 255;
       data[i + 2] = 255;
     }
   }
 
-  return new ImageData(new Uint8ClampedArray([...data]), imgData.width, imgData.height);
+  return new ImageData(
+    new Uint8ClampedArray([...data]),
+    imgData.width,
+    imgData.height,
+  );
 }
 
 class Morph {
@@ -248,8 +288,10 @@ class Morph {
       // 구조체 전체 검색하기
       for (let j = 0; j < this.structure.data.length; j++) {
         if (this.structure.data[j] === 1) {
-          const structure_x = (j % this.structure.width) - this.structure.center[0];
-          const structure_y = parseInt(j / this.structure.width) - this.structure.center[1];
+          const structure_x =
+            (j % this.structure.width) - this.structure.center[0];
+          const structure_y =
+            parseInt(j / this.structure.width) - this.structure.center[1];
 
           const pos_x = data_x + structure_x * 4;
           const pos_y = data_y + structure_y;
@@ -301,8 +343,10 @@ class Morph {
       // 구조체 전체 검색하기
       for (let j = 0; j < this.structure.data.length; j++) {
         if (this.structure.data[j] === 1) {
-          const structure_x = (j % this.structure.width) - this.structure.center[0];
-          const structure_y = parseInt(j / this.structure.width) - this.structure.center[1];
+          const structure_x =
+            (j % this.structure.width) - this.structure.center[0];
+          const structure_y =
+            parseInt(j / this.structure.width) - this.structure.center[1];
 
           const pos_x = data_x + structure_x * 4;
           const pos_y = data_y + structure_y;
@@ -345,8 +389,10 @@ class Morph {
 
       for (let j = 0; j < this.structure.data.length; j++) {
         if (this.structure.data[j] === 1) {
-          const structure_x = (j % this.structure.width) - this.structure.center[0];
-          const structure_y = parseInt(j / this.structure.width) - this.structure.center[1];
+          const structure_x =
+            (j % this.structure.width) - this.structure.center[0];
+          const structure_y =
+            parseInt(j / this.structure.width) - this.structure.center[1];
 
           const pos_x = data_x + structure_x * 4;
           const pos_y = data_y + structure_y;
@@ -406,6 +452,10 @@ class Morph {
   }
 
   getImg() {
-    return new ImageData(new Uint8ClampedArray(this.data), this.imgData.width, this.imgData.height);
+    return new ImageData(
+      new Uint8ClampedArray(this.data),
+      this.imgData.width,
+      this.imgData.height,
+    );
   }
 }

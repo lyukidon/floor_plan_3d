@@ -1,35 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>3D 평면도</title>
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://unpkg.com/three/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@latest/examples/jsm/"
-        }
-      }
-    </script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-  </head>
-  <body>
-    <div>
-      <div class="inputoutput">
-        <img id="imageSrc" alt="No Image" />
-        <div class="caption">image Preview <input type="file" id="fileInput" name="file" /></div>
-      </div>
-      <div class="inputoutput">
-        <canvas id="canvasOutput"></canvas>
-        <div class="caption">img preview canvas</div>
-      </div>
-      <input type="range" id="colorRange" name="colorRange" value="60" min="10" max="250" step="10" />
-      <div class="inputoutput">
-        <canvas id="canvasEdit"></canvas>
-        <div class="caption">edited</div>
-      </div>
-    </div>
-    <script src="./script/imgEdit.js" type="module"></script>
-    <script src="./script/main.js" type="module"></script>
+    <head>
+        <meta charset="utf-8" />
+        <title>3D 평면도</title>
+        <script type="importmap">
+            {
+                "imports": {
+                    "three": "https://unpkg.com/three/build/three.module.js",
+                    "three/addons/": "https://cdn.jsdelivr.net/npm/three@latest/examples/jsm/"
+                }
+            }
+        </script>
+        <script
+            type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"
+        ></script>
+    </head>
+    <body>
+        <div>
+            <div class="inputoutput">
+                <div class="caption">
+                    image Preview
+                    <input type="file" id="fileInput" name="file" />
+                </div>
+                <img id="imageSrc" src="./public/map.jpeg" alt="No Image" />
+            </div>
+            <div class="inputoutput">
+                <div class="caption">img preview canvas</div>
+                <canvas id="canvasOutput"></canvas>
+            </div>
+            <input
+                type="range"
+                id="colorRange"
+                name="colorRange"
+                value="60"
+                min="10"
+                max="250"
+                step="10"
+            />
+            <div class="inputoutput">
+                <div class="caption">edited</div>
+                <canvas id="canvasEdit"></canvas>
+            </div>
+        </div>
+        <script src="./script/imgEdit.js" type="module"></script>
+        <script src="./script/main.js" type="module"></script>
     </body>
 </html>
