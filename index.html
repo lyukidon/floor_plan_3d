@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>3D 평면도</title>
+        <!-- <link href="style.css" rel="stylesheet" /> -->
         <script type="importmap">
             {
                 "imports": {
@@ -17,7 +18,7 @@
         ></script>
     </head>
     <body>
-        <div>
+        <div class="container">
             <div class="inputoutput">
                 <div class="caption">
                     image Preview
@@ -29,16 +30,16 @@
                 <div class="caption">img preview canvas</div>
                 <canvas id="canvasOutput"></canvas>
             </div>
-            <input
-                type="range"
-                id="colorRange"
-                name="colorRange"
-                value="60"
-                min="10"
-                max="250"
-                step="10"
-            />
             <div class="inputoutput">
+                <input
+                    type="range"
+                    id="colorRange"
+                    name="colorRange"
+                    value="60"
+                    min="10"
+                    max="250"
+                    step="10"
+                />
                 <div class="caption">edited</div>
                 <canvas id="canvasEdit"></canvas>
             </div>

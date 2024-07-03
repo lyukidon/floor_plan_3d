@@ -1,12 +1,13 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-export function render3d(imgData) {
   // 렌더러 설정
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
   renderer.setClearColor(0x000000, 1);
   document.body.appendChild(renderer.domElement);
+
+export function render3d(imgData) {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(
