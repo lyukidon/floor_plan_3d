@@ -40,6 +40,7 @@ var baseColor = document.querySelector("input#colorRange").value;
 
 rangeElement.addEventListener("change", () => {
   baseColor = rangeElement.value;
+  document.querySelector('.baseColorValue').innerText = baseColor
   drawCanvas();
 });
 

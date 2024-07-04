@@ -4,7 +4,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
   // 렌더러 설정
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
-  renderer.setClearColor(0x000000, 1);
+  renderer.setClearColor(0xffffff, 1);
   document.body.appendChild(renderer.domElement);
 
 export function render3d(imgData) {
@@ -53,7 +53,7 @@ export function render3d(imgData) {
   light.position.set(0, 0, 50).normalize();
   scene.add(light);
 
-  camera.position.z = 400;
+  camera.position.z = 250;
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.rotateSpeed = 0.6; // 마우스로 카메라를 회전시킬 속도입니다. 기본값(Float)은 1입니다.

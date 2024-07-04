@@ -1,5 +1,24 @@
-.container{
-  /* display: grid;
+.container {
+  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, auto));
-  justify-items: center; */
+  justify-items: center;
+}
+
+.edittedHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.inputoutput{
+  display: none;
+}
+
+#imageSrc{
+  display: none;
+}
+
+.rangeContainer{
+  display: flex;
+  flex-direction: row;
 }
