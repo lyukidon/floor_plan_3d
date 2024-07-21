@@ -65,9 +65,6 @@ export function render3d(imgData) {
 
   function animate() {
     requestAnimationFrame(animate);
-    // mesh.rotation.x += 0.01;
-    // mesh.rotation.y += 0.01;
-
     renderer.render(scene, camera);
   }
 

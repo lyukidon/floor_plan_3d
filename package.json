@@ -6,15 +6,22 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@react-three/fiber": "^8.16.8",
+    "@reduxjs/toolkit": "^2.2.6",
     "@types/lodash": "^4.17.6",
     "lodash": "^4.17.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-scripts": "^5.0.1"
+    "react-redux": "^9.1.2",
+    "react-scripts": "^5.0.1",
+    "redux": "^5.0.1",
+    "three": "^0.166.1",
+    "three-addons": "^1.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@types/three": "^0.166.0",
     "typescript": "^5.5.3"
   },
   "browserslist": {
