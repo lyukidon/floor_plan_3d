@@ -6,4 +6,5 @@ export default configureStore({
   reducer: {
     imgData: imgDataReducer
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false})
 })

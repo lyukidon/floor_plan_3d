@@ -1,11 +1,12 @@
 import React from 'react';
 import ImgEditor from './components/ImgEditor';
 import Renderer3D from './components/Renderer3D';
+import ImgPreview from './components/ImgPreview';
 
 function App() {
   return (
     <div>
-      <ImgEditor />
+      <ImgPreview />
       <Renderer3D />
     </div>
   );

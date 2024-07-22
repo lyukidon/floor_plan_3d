@@ -1,19 +1,16 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const imgDataSlice = createSlice({
-    name: "imgData",
-    initialState: { width: 0, height: 0, data: []},
-    reducers: {
-        getData: (state, action) => {
-            state.data = action.payload
-        },
-        getAllData: (state, action) => {
-            state = action.payload
-        },
-        getWidth: (state, action) => {
-            state.width = action.payload
-        }
-    },
+  name: "imgData",
+  initialState: { width: 0, height: 0, data: [] },
+  reducers: {
+    setData: (state, action) => {
+      console.log(action.payload)
+      return { ...action.payload }
+    }
+  },
 });
+
+export const { setData } = imgDataSlice.actions;
 
 export default imgDataSlice.reducer;
