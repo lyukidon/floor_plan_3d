@@ -2,7 +2,7 @@ import { ImgData } from "./editor.type";
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-export function render3d(imgData: ImgData, renderer: THREE.WebGLRenderer) {
+export function render3d(imgData: ImageData, renderer: THREE.WebGLRenderer) {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(

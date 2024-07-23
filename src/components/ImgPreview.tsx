@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import imageCompression from "browser-image-compression";
 import { useDispatch, useSelector } from "react-redux";
 import { setData } from "../store/imgData";
@@ -12,41 +12,33 @@ function ImgPreview() {
   const inputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  /** 1. 이미지 데이터가 로드된 경우,  */
-  useEffect(() => {
-    if(canvasRef.current !== null && imgData){
-      // console.log(canvasRef.current)
-      // console.log(imgData)
-      // drawCanvas(canvasRef.current, imgData)
-    }
-    console.log(imgData)
-    console.log('hi')
-  }, [imgData]);
-
+  /** 이미지 데이터가 로드된 경우,  */
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files !== null) {
+      /** image 크기 제한하기 (압축) */
       imageCompression(e.target.files[0], options)
         .then((res: Blob | MediaSource) => {
           const imgUrl = URL.createObjectURL(res);
           const img = new Image();
           img.onload = () => {
+            /** canvas에 그리기 */
+            const canvas = canvasRef.current;
+            canvas!.width = img.width
+            canvas!.height = img.height
+            const ctx = canvas!.getContext("2d");
+            ctx!.drawImage(img, 0, 0)
+            /** canvas 데이터 redux에 전달하기 */
             const {width, height} = img
-            const offscreenCanvas = new OffscreenCanvas(img.width, img.height);
-            const ctx = offscreenCanvas.getContext("2d");
-            ctx!.drawImage(img, 0, 0);
-            const imageDataArray = ctx!.getImageData(0, 0, offscreenCanvas.width, offscreenCanvas.height);
-            dispatch(setData({ width, height, imageDataArray}))
+            const { data } = ctx!.getImageData(0, 0, canvas!.width, canvas!.height);
+            const imageData = new ImageData(
+              new Uint8ClampedArray([...data]),
+              width, height
+            )
+            dispatch(setData(imageData))
           };
           img.src = imgUrl;
         });
     }
-    console.log(imgData)
-  };
-
-  const drawCanvas = (canvas: HTMLCanvasElement, image: CanvasImageSource) => {
-    const ctx = canvas.getContext("2d");
-    if (ctx === null) return;
-    ctx.drawImage(image, 0, 0);
   };
 
   return (
@@ -55,7 +47,7 @@ function ImgPreview() {
         image Preview
         <input ref={inputRef} onChange={handleInput} type="file" id="fileInput" name="file" />
       </div>
-      <canvas ref={canvasRef}></canvas>
+      <canvas ref={canvasRef} />
     </div>
   );
 }

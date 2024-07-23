@@ -15,7 +15,7 @@ function Renderer3D() {
       renderer.setClearColor(0xffffff, 1);
       containerRef.current.appendChild(renderer.domElement);
 
-      render3d(imgData, renderer);
+      // render3d(imgData, renderer);
     }
   }, []);
 

@@ -2,10 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const imgDataSlice = createSlice({
   name: "imgData",
-  initialState: { width: 0, height: 0, data: [] },
+  initialState: { width: 0, height: 0, data: [], colorSpace: "" },
   reducers: {
     setData: (state, action) => {
-      console.log(action.payload)
       return { ...action.payload }
     }
   },
