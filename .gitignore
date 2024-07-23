@@ -1,2 +1,11 @@
-.DS_store
+.DS_Store
+.yarn/*
+.vscode
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 node_modules

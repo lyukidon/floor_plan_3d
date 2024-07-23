@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 inputElement.addEventListener(
   "change",
   (e) => {
-    console.log(e.target.files[0]);
     imageCompression(e.target.files[0], options).then(
       (res) => (imgElement.src = URL.createObjectURL(res)),
     );
@@ -104,15 +103,9 @@ function editImg(imgData) {
   });
   return (
     morph
-      // .dilation()
-      // .erosion()
       .closing()
-      // .grediant()
       .getImg()
   );
-  // return morph.dilation()
-  // return morph.erosion();
-  // return binarizated
 }
 
 // 이미지 테두리 찾기
