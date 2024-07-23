@@ -1,4 +1,4 @@
-import { DetailedHTMLProps, HTMLAttributes, useEffect, useRef } from "react";
+import React, { DetailedHTMLProps, HTMLAttributes, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { render3d } from "../utils/render3d";
 import { useSelector } from "react-redux";
@@ -22,4 +22,4 @@ function Renderer3D() {
   return <div ref={containerRef}></div>;
 }
 
-export default Renderer3D;
+export default React.memo(Renderer3D);

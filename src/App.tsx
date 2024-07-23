@@ -7,6 +7,7 @@ function App() {
   return (
     <div>
       <ImgPreview />
+      <ImgEditor />
       <Renderer3D />
     </div>
   );
