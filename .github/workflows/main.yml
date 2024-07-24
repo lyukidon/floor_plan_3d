@@ -25,10 +25,10 @@ jobs:
       run: yarn install
 
     - name: Build project
-      run: npm run build
+      run: yarn run build
 
     - name: Audit dependencies
-      run: npm audit
+      run: yarn npm audit
 
     - name: Run Snyk to check for vulnerabilities
       uses: snyk/actions/node@master
